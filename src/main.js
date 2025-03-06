@@ -42,7 +42,7 @@ Object.entries(textureMap).forEach(([key, value]) => {
 
 const dracoLoader = new DRACOLoader();
 
-dracoLoader.setDecoderPath( './node_modules/three/examples/jsm/libs/draco/' );
+dracoLoader.setDecoderPath( '/draco/' );
 
 const loader = new GLTFLoader();
 loader.setDRACOLoader(dracoLoader);
