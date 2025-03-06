@@ -50,7 +50,6 @@ loader.setDRACOLoader(dracoLoader);
 loader.load( '/models/portfolio.glb', function (glb){
   const model = glb.scene;
   model.traverse((child)=>{
-    console.log(child);
     if(child.isMesh){
       Object.keys(textureMap).forEach((key)=>{
         if(child.name === key){
@@ -63,7 +62,6 @@ loader.load( '/models/portfolio.glb', function (glb){
     }
     if(child.material && child.material.map){
       child.material.map.minFilter = THREE.LinearFilter;
-      console.log(child.material.map);
     }
   });
   model.position.set(0, -2, 0);
