@@ -83,6 +83,10 @@ camera.position.x = 2;
 
 const canvas = document.querySelector('canvas.cnv')
 const controls = new OrbitControls(camera, canvas)
+controls.enableDamping = true;
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
 
 
 const renderer = new THREE.WebGLRenderer({canvas:canvas, })
@@ -90,14 +94,20 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize(window.innerWidth, window.innerHeight)
-controls.enableDamping = true;
+
 window.addEventListener('resize', ()=>{
   renderer.setSize(window.innerWidth, window.innerHeight)
   camera.aspect = window.innerWidth/window.innerHeight;
   camera.updateProjectionMatrix()
+});
+
+document.addEventListener('mousemove', event=>{
+  pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 })
-function renderloop(){
+
+function render(){
   controls.update()
   renderer.render(scene, camera)
 }
-renderer.setAnimationLoop(renderloop)
+renderer.setAnimationLoop(render)
