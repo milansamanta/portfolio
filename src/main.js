@@ -89,10 +89,9 @@ const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
 
-const renderer = new THREE.WebGLRenderer({canvas:canvas, })
+const renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true})
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize(window.innerWidth, window.innerHeight)
 
 window.addEventListener('resize', ()=>{
