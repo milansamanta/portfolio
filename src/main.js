@@ -1,112 +1,107 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 
-const scene = new THREE.Scene()
-
-const textureLoader = new THREE.TextureLoader();
-
-const textureMap = {
-  books: "/textureset/books.webp",
-  chair: "/textureset/chair.webp",
-  controlers: "/textureset/controlers.webp",
-  table1: "/textureset/desk1.webp",
-  table2: "/textureset/desk2.webp",
-  headphones: "/textureset/headphone.webp",
-  keyboard: "/textureset/keyboard.webp",
-  lamp: "/textureset/lamp.webp",
-  monitor: "/textureset/monitor.webp",
-  monitorscreen: "/textureset/monitorScreen.webp",
-  others: "/textureset/others.webp",
-  pc: "/textureset/pc.webp",
-  pcInside: "/textureset/pcInside.webp",
-  witcher: "/textureset/pictures.webp",
-  plant1: "/textureset/plant1.webp",
-  plant2: "/textureset/plant2.webp",
-  plant3: "/textureset/plant3.webp",
-  ps5: "/textureset/playstation.webp",
-  projecter: "/textureset/projector.webp",
-  sofa1: "/textureset/sofa1.webp",
-  sofa2: "/textureset/sofa2.webp",
-  walls: "/textureset/wall&floor.webp",
-};
-
-const loadedTextures = {};
-Object.entries(textureMap).forEach(([key, value]) => {
-  const texture = textureLoader.load(value);
-  texture.flipY = false;
-  texture.colorSpace = THREE.SRGBColorSpace;
-  loadedTextures[key] = texture;
-});
-
-const dracoLoader = new DRACOLoader();
-
-dracoLoader.setDecoderPath( '/draco/' );
-
-const loader = new GLTFLoader();
-loader.setDRACOLoader(dracoLoader);
-
-loader.load( '/models/portfolio.glb', function (glb){
-  const model = glb.scene;
-  model.traverse((child)=>{
-    if(child.isMesh){
-      Object.keys(textureMap).forEach((key)=>{
-        if(child.name === key){
-          const material = new THREE.MeshBasicMaterial({
-            map: loadedTextures[key]
-          });
-          child.material = material;
-        }
-      })
-    }
-    if(child.material && child.material.map){
-      child.material.map.minFilter = THREE.LinearFilter;
-    }
-  });
-  model.position.set(0, -2, 0);
-	scene.add(model);
-}, undefined, function ( error ) {
-	console.error( error );
-});
+import {load} from './loader.js';
+import {updateCanvas, animate_chair, onIntersect, getObjectarray} from './utility.js';
 
 
 
+//initialize
+const container = document.querySelector("div.container");
+const scene = new THREE.Scene();
+const model = await load(scene);
+const chair = scene.getObjectByName('chairbase');
+const screen = scene.getObjectByName('monitorscreen');
+const div = document.querySelector('div.screen');
+screen.removeFromParent();
+console.log(screen)
+
+
+//css3d renderer object
+const box = new THREE.Box3().setFromObject(screen);
+const size = new THREE.Vector3();
+
+box.getSize(size);
+console.log(size)
+
+console.log(screen);
+console.log(div);
+div.style.width = `${size.x * 100}px`;
+div.style.height = `${(size.y * 100)+5}px`;
+const object = new CSS3DObject(div);
+// console.log(object);
+object.position.copy(screen.position);
+
+object.scale.set(
+  size.x / object.element.offsetWidth,
+  size.y / object.element.offsetHeight,
+);
+scene.add(object);
+
+
+//new monitor screen;
+const planeGeom = new THREE.PlaneGeometry(size.x, size.y);
+const monitor = new THREE.Mesh(planeGeom);
+monitor.position.copy(screen.position);
+const material = monitor.material;
+monitor.name = 'newscreen';
+scene.add(monitor)
+const raycastingObjects = getObjectarray(scene);
+console.log(raycastingObjects);
+
+
+//camera
 const camera = new THREE.PerspectiveCamera(
   60,
-  window.innerWidth/window.innerHeight,
-  1,
+  container.clientWidth/container.clientHeight,
+  .01,
   200
 )
-camera.position.z = -5;
-camera.position.x = 2;
+camera.position.z = 5;
 
-const canvas = document.querySelector('canvas.cnv')
-const controls = new OrbitControls(camera, canvas)
+//canvas and orbit controls
+const canvas = document.querySelector('canvas.cnv');
+const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
 const raycaster = new THREE.Raycaster();
-const pointer = new THREE.Vector2();
+const pointer = new THREE.Vector2(-2, -2);
+
+//renderer
+const renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true, preserveDrawingBuffer:true})
+renderer.setPixelRatio(Math.min(Math.max(1, window.devicePixelRatio), 2));
+
+renderer.setSize(container.clientWidth, container.clientHeight);
 
 
-const renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true})
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+//cssrenderer
+const cssrenderer = new CSS3DRenderer({element: document.querySelector('div.css3d')});
+container.appendChild(cssrenderer.domElement);
+cssrenderer.setSize(container.clientWidth, container.clientHeight);
 
-renderer.setSize(window.innerWidth, window.innerHeight)
-
+//resize
 window.addEventListener('resize', ()=>{
-  renderer.setSize(window.innerWidth, window.innerHeight)
-  camera.aspect = window.innerWidth/window.innerHeight;
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  cssrenderer.setSize(container.clientWidth, container.clientHeight);
+  
+  camera.aspect = container.clientWidth/container.clientHeight;
   camera.updateProjectionMatrix()
 });
 
+
 document.addEventListener('mousemove', event=>{
-  pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+  pointer.x = ( event.clientX / container.clientWidth ) * 2 - 1;
+	pointer.y = - ( event.clientY / container.clientHeight ) * 2 + 1;
 })
 
 function render(){
-  controls.update()
-  renderer.render(scene, camera)
+  raycaster.setFromCamera( pointer, camera );
+  controls.update();
+  // cssrenderer.render(scene,camera);
+  onIntersect(raycaster,raycastingObjects);
+  renderer.render(scene, camera);
+  updateCanvas(div, material);
 }
-renderer.setAnimationLoop(render)
+animate_chair(chair);
+renderer.setAnimationLoop(render);
