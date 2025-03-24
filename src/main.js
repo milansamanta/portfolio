@@ -3,19 +3,17 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 
 import {load} from './loader.js';
-import {updateCanvas, animate_chair, onIntersect, getObjectarray} from './utility.js';
-
-
+import {updateCanvas, animate_chair, onIntersect} from './utility.js';
 
 //initialize
 const container = document.querySelector("div.container");
 const scene = new THREE.Scene();
-const model = await load(scene);
-const chair = scene.getObjectByName('chairbase');
+const raycastingObjects = await load(scene);
+const chair = scene.getObjectByName('chairbase_raycast');
 const screen = scene.getObjectByName('monitorscreen');
 const div = document.querySelector('div.screen');
 screen.removeFromParent();
-console.log(screen)
+console.log(screen);
 
 
 //css3d renderer object
@@ -23,14 +21,13 @@ const box = new THREE.Box3().setFromObject(screen);
 const size = new THREE.Vector3();
 
 box.getSize(size);
-console.log(size)
 
 console.log(screen);
 console.log(div);
 div.style.width = `${size.x * 100}px`;
 div.style.height = `${(size.y * 100)+5}px`;
 const object = new CSS3DObject(div);
-// console.log(object);
+console.log(object);
 object.position.copy(screen.position);
 
 object.scale.set(
@@ -40,14 +37,14 @@ object.scale.set(
 scene.add(object);
 
 
-//new monitor screen;
+// new monitor screen
 const planeGeom = new THREE.PlaneGeometry(size.x, size.y);
 const monitor = new THREE.Mesh(planeGeom);
 monitor.position.copy(screen.position);
 const material = monitor.material;
-monitor.name = 'newscreen';
+monitor.name = 'newscreen_raycast_pointer';
 scene.add(monitor)
-const raycastingObjects = getObjectarray(scene);
+raycastingObjects.push(monitor);
 console.log(raycastingObjects);
 
 
@@ -93,15 +90,16 @@ window.addEventListener('resize', ()=>{
 document.addEventListener('mousemove', event=>{
   pointer.x = ( event.clientX / container.clientWidth ) * 2 - 1;
 	pointer.y = - ( event.clientY / container.clientHeight ) * 2 + 1;
-})
+});
+
 
 function render(){
-  raycaster.setFromCamera( pointer, camera );
   controls.update();
   // cssrenderer.render(scene,camera);
-  onIntersect(raycaster,raycastingObjects);
   renderer.render(scene, camera);
   updateCanvas(div, material);
+  raycaster.setFromCamera( pointer, camera );
+  onIntersect(raycaster,raycastingObjects);
 }
 animate_chair(chair);
 renderer.setAnimationLoop(render);

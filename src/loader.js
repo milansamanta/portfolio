@@ -19,7 +19,7 @@ const textureMap = {
     headphones: "/textureset/headphone.webp",
     keyboard: "/textureset/keyboard.webp",
     lamp: "/textureset/lamp.webp",
-    monitorstand: "/textureset/monitor.webp",
+    monitorbody: "/textureset/monitor.webp",
     monitorscreen: "/textureset/monitorScreen.webp",
     others: "/textureset/others.webp",
     pcCabinet: "/textureset/pc.webp",
@@ -39,6 +39,7 @@ function load(scene) {
     return new Promise((resolve, reject) =>{
 
         const loadedTextures = {};
+        const raycastobjects = [];
 
         Object.entries(textureMap).forEach(([key, value]) => {
             const texture = textureLoader.load(value);
@@ -47,9 +48,8 @@ function load(scene) {
             loadedTextures[key] = texture;
           });
 
-        loader.load( '/models/portfolio.glb', function (glb){
+        loader.load( '/models/portfolio-v1.glb', function (glb){
             const model = glb.scene;
-            console.log(model);
             model.traverse((child)=>{
               if(child.isMesh){
                 Object.keys(textureMap).forEach((key)=>{
@@ -61,18 +61,37 @@ function load(scene) {
                   }
                 });
               }
+              if(child.name.includes("raycast")){
+                raycastobjects.push(child);
+              }
               if(child.material && child.material.map){
                 child.material.map.minFilter = THREE.LinearFilter;
               }
             });
           
-                scene.add(model);
-                resolve(model);
+              scene.add(model);
+              const glassObject = scene.getObjectByName('glass');
+              console.log(glassObject);
+              const glassMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0x000000,
+                transparent: true,
+                opacity: 0.3,
+                roughness: 0,
+                transmission: 0.9, 
+                thickness: 0.5,
+                clearcoat: 1,
+                clearcoatRoughness: 0,
+                reflectivity: 0.8
+              });
+              glassObject.material = glassMaterial;
+
+              resolve(raycastobjects);
 
             }, undefined, function ( error ) {
 	            console.error( error );
             });
     });
+
 }
 
 
