@@ -1,23 +1,24 @@
 import * as THREE from "three";
+import { CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 
 
 import html2canvas from "html2canvas";
 
 function updateCanvas(textureDiv, material) {
-    html2canvas(textureDiv,{
-        scale:window.devicePixelRatio,
-    }).then(canvas => {
+    // html2canvas(textureDiv,{
+    //     scale:window.devicePixelRatio,
+    // }).then(canvas => {
       
-        const texture = new THREE.CanvasTexture(canvas);
-        texture.colorSpace = THREE.SRGBColorSpace;
-        texture.needsUpdate = true;
+    //     const texture = new THREE.CanvasTexture(canvas);
+    //     texture.colorSpace = THREE.SRGBColorSpace;
+    //     texture.needsUpdate = true;
 
-        // Update the material's texture
-        if (material.map) material.map.dispose();
-        material.map = texture;
-        material.map.minFilter = THREE.LinearFilter;
-        material.needsUpdate = true;
-    });
+    //     // Update the material's texture
+    //     if (material.map) material.map.dispose();
+    //     material.map = texture;
+    //     material.map.minFilter = THREE.LinearFilter;
+    //     material.needsUpdate = true;
+    // });
 }
 
 
@@ -52,6 +53,28 @@ function onIntersect(raycaster, objects){
     }
 }
 
+
+function create_css3d(element, width, height, position, object){
+    // const obj = new THREE.Object3D();
+    // element.style.opacity = 1;
+
+    // const css3dObject = new CSS3DObject( element );
+
+    // obj.css3dObject = css3dObject;
+    // obj.add(css3dObject);
+    // const material = new THREE.MeshBasicMaterial({
+    //     opacity	: 0,
+    //     color	: new THREE.Color( 0x111111 ),
+    //     blending: THREE.NoBlending,
+    //     side	: THREE.DoubleSide,
+    // });
+    // const mesh = new THREE.Mesh(new THREE.PlaneGeometry(width, height), material);
+    // obj.add(mesh);
+    // obj.position.copy(position);
+    // return obj;
+}
+
+
 export{
-    updateCanvas,  onIntersect, animate_chair
+    updateCanvas,  onIntersect, animate_chair, create_css3d
 }

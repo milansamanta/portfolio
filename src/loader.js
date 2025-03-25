@@ -70,8 +70,9 @@ function load(scene) {
             });
           
               scene.add(model);
+              // console.log(scene);
               const glassObject = scene.getObjectByName('glass');
-              console.log(glassObject);
+              // console.log(glassObject);
               const glassMaterial = new THREE.MeshPhysicalMaterial({
                 color: 0x000000,
                 transparent: true,

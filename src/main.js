@@ -3,16 +3,20 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 
 import {load} from './loader.js';
-import {updateCanvas, animate_chair, onIntersect} from './utility.js';
+import {updateCanvas, animate_chair, onIntersect, create_css3d} from './utility.js';
 
 //initialize
+const root = new THREE.Object3D();
 const container = document.querySelector("div.container");
 const scene = new THREE.Scene();
 const raycastingObjects = await load(scene);
+
+console.log(scene);
+
 const chair = scene.getObjectByName('chairbase_raycast');
 const screen = scene.getObjectByName('monitorscreen');
 const div = document.querySelector('div.screen');
-screen.removeFromParent();
+// screen.removeFromParent();
 console.log(screen);
 
 
@@ -24,29 +28,30 @@ box.getSize(size);
 
 console.log(screen);
 console.log(div);
-div.style.width = `${size.x * 100}px`;
-div.style.height = `${(size.y * 100)+5}px`;
-const object = new CSS3DObject(div);
-console.log(object);
-object.position.copy(screen.position);
+div.style.width = `${size.x }px`;
+div.style.height = `${size.y } px`;
+// const object = new CSS3DObject(div);
+// console.log(object);
+// object.position.copy(screen.position);
 
-object.scale.set(
-  size.x / object.element.offsetWidth,
-  size.y / object.element.offsetHeight,
-);
-scene.add(object);
-
-
-// new monitor screen
-const planeGeom = new THREE.PlaneGeometry(size.x, size.y);
-const monitor = new THREE.Mesh(planeGeom);
-monitor.position.copy(screen.position);
-const material = monitor.material;
-monitor.name = 'newscreen_raycast_pointer';
-scene.add(monitor)
-raycastingObjects.push(monitor);
-console.log(raycastingObjects);
-
+// object.scale.set(
+  //   size.x / object.element.offsetWidth,
+  //   size.y / object.element.offsetHeight,
+  // );
+  
+  
+  // new monitor screen
+  const planeGeom = new THREE.PlaneGeometry(size.x, size.y);
+  const monitor = new THREE.Mesh(planeGeom);
+  monitor.position.copy(screen.position);
+  const material = monitor.material;
+  monitor.name = 'newscreen_raycast_pointer';
+  scene.add(monitor)
+  raycastingObjects.push(monitor);
+  console.log(raycastingObjects);
+  // const object = create_css3d(div, size.x, size.y, monitor.position, monitor);
+  // monitor.add(object);
+  
 
 //camera
 const camera = new THREE.PerspectiveCamera(
@@ -66,7 +71,7 @@ const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2(-2, -2);
 
 //renderer
-const renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true, preserveDrawingBuffer:true})
+const renderer = new THREE.WebGLRenderer({canvas:canvas, alpha: true, antialias:true, preserveDrawingBuffer:true})
 renderer.setPixelRatio(Math.min(Math.max(1, window.devicePixelRatio), 2));
 
 renderer.setSize(container.clientWidth, container.clientHeight);
@@ -95,11 +100,11 @@ document.addEventListener('mousemove', event=>{
 
 function render(){
   controls.update();
-  // cssrenderer.render(scene,camera);
+  cssrenderer.render(scene,camera);
   renderer.render(scene, camera);
-  updateCanvas(div, material);
   raycaster.setFromCamera( pointer, camera );
   onIntersect(raycaster,raycastingObjects);
 }
+// updateCanvas(div, material);
 animate_chair(chair);
 renderer.setAnimationLoop(render);
