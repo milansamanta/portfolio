@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "html2canvas": "^1.4.1",
     "three": "^0.173.0",
     "vite": "^6.2.3"
   }

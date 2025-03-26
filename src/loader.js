@@ -34,7 +34,7 @@ const textureMap = {
     sofa2: "/textureset/sofa2.webp",
     walls: "/textureset/wall&floor.webp",
   };
-function load(scene) {
+function load(group) {
 
     return new Promise((resolve, reject) =>{
 
@@ -69,10 +69,8 @@ function load(scene) {
               }
             });
           
-              scene.add(model);
-              // console.log(scene);
-              const glassObject = scene.getObjectByName('glass');
-              // console.log(glassObject);
+              group.add(model);
+              const glassObject = group.getObjectByName('glass');
               const glassMaterial = new THREE.MeshPhysicalMaterial({
                 color: 0x000000,
                 transparent: true,
@@ -90,6 +88,7 @@ function load(scene) {
 
             }, undefined, function ( error ) {
 	            console.error( error );
+              reject(error);
             });
     });
 
