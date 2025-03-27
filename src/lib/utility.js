@@ -44,7 +44,7 @@ function create_css3d(type, size, position) {
     element.style.height =  1080+'px';
     element.style.opacity = 1;
     element.classList.add('screen');
-    element.innerHTML = '<iframe src="/src/iframe/index.html" title="OS" class="frame">Not Found</iframe>'
+    element.innerHTML = '<iframe src="/iframe/index.html" title="OS" class="frame">Not Found</iframe>'
 
     const css3dObject = new CSS3DObject( element )
     css3dObject.scale.set(size.x/(aspect*1080), size.y/1080);
