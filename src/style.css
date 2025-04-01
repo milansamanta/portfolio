@@ -15,12 +15,8 @@ body {
 
 #css3d{
   top:0;
-  /* backface-visibility: hidden; */
-  /* transform: translateZ(0); */
-  /* -webkit-font-smoothing: subpixel-antialiased; */
   pointer-events: none;
   background-color: transparent;
-  /* backface-visibility: hidden; */
   
 }
 
@@ -29,7 +25,6 @@ body {
   display: flex;
   margin: 0;
   color: white;
-  background-color:blue;
   align-items: center;
   justify-content: center;
 }

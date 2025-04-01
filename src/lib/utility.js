@@ -1,19 +1,15 @@
-import {Group, MeshBasicMaterial, NoBlending, DoubleSide, Mesh, PlaneGeometry, Vector3, Box3} from 'three'
+import {Group, MeshBasicMaterial, NoBlending, DoubleSide, Mesh, PlaneGeometry, Vector3, Box3} from 'three';
 import { CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 import { OrbitControls } from "./OrbitControls.js";
 
 
 
+const frequency = 2 * Math.PI / 10000;
+const amplitude = Math.PI / 4.0;
+const startTime = performance.now();
 async function animate_chair(chair) {
-    const frequency = 2 * Math.PI / 10000;
-    const amplitude = Math.PI / 4.0;
-    const startTime = performance.now();
 
-    function update(){
-        chair.rotation.y = amplitude * Math.sin(frequency * (performance.now() - startTime));
-        requestAnimationFrame(update);
-    }
-    update();
+    chair.rotation.y = amplitude * Math.sin(frequency * (performance.now() - startTime));   
 }
 
 function onIntersect(raycaster, objects){
@@ -35,9 +31,9 @@ function onIntersect(raycaster, objects){
 }
 
 
-function create_css3d(type, size, position) {
+function create_css3d(type, object) {
     const obj = new Group();
-
+    const size = getSize(object);
     const element = document.createElement( type );
     const aspect = size.x/size.y;
     element.style.width = aspect*1080 +'px';
@@ -60,9 +56,9 @@ function create_css3d(type, size, position) {
     });
     const geometry = new PlaneGeometry( size.x, size.y );
     const mesh = new Mesh( geometry, material );
-    mesh.name = 'newmonitor_raycast_pointer';
+    mesh.name = 'newmonitor';
     obj.mesh = mesh;
-    obj.position.copy(position);
+    obj.position.copy(object.position);
     obj.add( mesh );
 
     return obj
@@ -71,10 +67,11 @@ function create_css3d(type, size, position) {
 function create_controls(camera, canvas){
     const controls = new OrbitControls(camera, canvas);
     controls.maxDistance = 7;
+    controls.minDistance = -2
     controls.enableDamping = true;
     controls.maxPolarAngle = Math.PI/2;
-    controls.minAzimuthAngle = -Math.PI/9.5;
-    controls.maxAzimuthAngle = Math.PI/2 + Math.PI/12;
+    controls.minAzimuthAngle = -Math.PI/12;
+    controls.maxAzimuthAngle = Math.PI/2;
     return controls;
 }
 

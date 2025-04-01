@@ -1,6 +1,7 @@
-import {TextureLoader, SRGBColorSpace, MeshBasicMaterial, LinearFilter, MeshPhysicalMaterial} from "three";
+import {TextureLoader, SRGBColorSpace, MeshBasicMaterial, LinearFilter, MeshPhysicalMaterial, CubeTextureLoader, DoubleSide} from "three";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import {getSize} from './utility.js'
 
 const textureLoader = new TextureLoader();
 const dracoLoader = new DRACOLoader();
@@ -11,29 +12,44 @@ const loader = new GLTFLoader();
 loader.setDRACOLoader(dracoLoader);
 
 const textureMap = {
-    books: "/textureset/books.webp",
-    chair: "/textureset/chair.webp",
-    controlers: "/textureset/controlers.webp",
-    table1: "/textureset/desk1.webp",
-    desk2: "/textureset/desk2.webp",
-    headphones: "/textureset/headphone.webp",
-    keyboard: "/textureset/keyboard.webp",
-    lamp: "/textureset/lamp.webp",
-    monitorbody: "/textureset/monitor.webp",
-    monitorscreen: "/textureset/monitorScreen.webp",
-    others: "/textureset/others.webp",
-    pcCabinet: "/textureset/pc.webp",
-    pcInside: "/textureset/pcInside.webp",
-    witcher: "/textureset/pictures.webp",
-    plant1: "/textureset/plant1.webp",
-    plant2: "/textureset/plant2.webp",
-    plant3: "/textureset/plant3.webp",
-    ps5: "/textureset/playstation.webp",
-    projecter: "/textureset/projector.webp",
-    sofa1: "/textureset/sofa1.webp",
-    sofa2: "/textureset/sofa2.webp",
-    walls: "/textureset/wall&floor.webp",
+    books: "/textures/books.webp",
+    chair: "/textures/chair.webp",
+    ps5: "/textures/ps5.webp",
+    table: "/textures/table.webp",
+    headphone: "/textures/headphone.webp",
+    lamp: "/textures/lamp.webp",
+    monitorbase: "/textures/monitor.webp",
+    monitorscreen: "/textures/monitorScreen.webp",
+    pc: "/textures/pc.webp",
+    witcher: "/textures/pictures.webp",
+    plant1: "/textures/plant1.webp",
+    plant2: "/textures/plant2.webp",
+    plant3: "/textures/plant3.webp",
+    ps5: "/textures/ps5.webp",
+    projecter: "/textures/others.webp",
+    sofa: "/textures/sofa.webp",
+    walls: "/textures/walls.webp",
+    back: "/textures/back.webp",
   };
+
+  const envmap = new CubeTextureLoader()
+  .setPath( '/textures/envmap/' )
+	.load([
+    'px.webp',
+    'nx.webp',
+    'py.webp',
+    'ny.webp',
+    'pz.webp',
+    'nz.webp'
+  ]);
+
+const glassMaterial = new MeshPhysicalMaterial({
+  transparent:true,
+  transmission: 1,
+  sheenColor: 0xffffff
+  });
+
+
 function load(group) {
 
     return new Promise((resolve, reject) =>{
@@ -68,21 +84,15 @@ function load(group) {
                 child.material.map.minFilter = LinearFilter;
               }
             });
-          
+              console.log(model);
               group.add(model);
               const glassObject = group.getObjectByName('glass');
-              const glassMaterial = new MeshPhysicalMaterial({
-                color: 0x000000,
-                transparent: true,
-                opacity: 0.3,
-                roughness: 0,
-                transmission: 0.9, 
-                thickness: 0.5,
-                clearcoat: 1,
-                clearcoatRoughness: 0,
-                reflectivity: 0.8
-              });
-              glassObject.material = glassMaterial;
+              const size = getSize(glassObject);
+              console.log(size);
+              // glassObject.material = glassMaterial;
+              
+              glassObject.removeFromParent();
+              group.getObjectByName('monitorbase_raycast_pointer').material.side = DoubleSide;
 
               resolve(raycastobjects);
 

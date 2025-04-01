@@ -28,8 +28,8 @@ const _TILT_LIMIT = Math.cos( 70 * MathUtils.DEG2RAD );
 const _v = new Vector3();
 const _twoPI = 2 * Math.PI;
 
-const minpan = new Vector3(-0.5, -1, -.7);
-const maxpan = new Vector3(2, 5, 2);
+const minpan = new Vector3(-1, -1, -1);
+const maxpan = new Vector3(1, 5, 1);
 
 const _STATE = {
     NONE: - 1,
