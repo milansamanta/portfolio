@@ -3,22 +3,24 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
-import { CustomRaycaster } from "./Raycaster";
 import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import { Vector2 } from "three";
-import { CustomControls } from "./CustomControls";
+import { Experience } from "./Experience";
+import { container } from "./Constants";
 
 
 
 
 export class Composer{
-    constructor(scene, camera, renderer, objects, container = document.querySelector('.container')) {
-      this.renderer = renderer;
-      this.scene = scene;
-      this.camera = camera;
-      this.container = container;
-      this.controls = new CustomControls(camera, renderer.webglElement);
-      this.raycaster = new CustomRaycaster(objects, container, camera, this.controls);
+    constructor() {
+      this.experience = new Experience();
+      console.log(this.experience);
+      
+      this.renderer = this.experience.renderer.webglrenderer;
+      this.scene = this.experience.scene;
+      this.camera = this.experience.camera;
+      this.controls = this.experience.controls;
+      this.raycaster = this.experience.raycasterer;
   
       this.composer = new EffectComposer(this.renderer);
   
@@ -29,12 +31,12 @@ export class Composer{
       this.composer.addPass(gammaPass);
 
       // OutlinePass Setup
-      this.outlinePass = new OutlinePass(new Vector2(this.container.clientWidth, this.container.clientHeight), scene, camera);
-      this.outlinePass.edgeStrength = 4;  // Glow intensity
+      this.outlinePass = new OutlinePass(new Vector2(container.clientWidth, container.clientHeight), this.scene, this.camera);
+      this.outlinePass.edgeStrength = 4;
       this.outlinePass.edgeGlow = 1.5;
       this.outlinePass.edgeThickness = 2;
       this.outlinePass.pulsePeriod = 0;
-      this.outlinePass.visibleEdgeColor.set(0xffffff); // Red outline
+      this.outlinePass.visibleEdgeColor.set(0xffffff);
       this.outlinePass.hiddenEdgeColor.set(0xffffff);
       this.composer.addPass(this.outlinePass);
       this.outlinePass.selectedObjects = [];
@@ -52,15 +54,15 @@ export class Composer{
     updateResolution() {
       const pixelRatio = this.renderer.getPixelRatio();
       this.fxaaPass.uniforms["resolution"].value.set(
-        1 / (this.container.clientWidth * pixelRatio),
-        1 / (this.container.clientHeight * pixelRatio)
+        1 / (container.clientWidth * pixelRatio),
+        1 / (container.clientHeight * pixelRatio)
       );
     }
   
     // Handle resize event
     update() {
       this.updateResolution();
-      this.composer.setSize(this.container.clientWidth, this.container.clientHeight);
+      this.composer.setSize(container.clientWidth, container.clientHeight);
     }
   
     // Render the scene with FXAA

@@ -1,15 +1,17 @@
 import { Raycaster, Vector2, Vector3 } from "three";
 import gsap from "gsap"
+import { Experience } from "./Experience";
+import { container } from "./Constants";
 
 export class CustomRaycaster extends Raycaster{
-    constructor(objects=[], container = document.querySelector('.container'), camera, controls){
+    constructor(){
         super();
-        this.camera = camera;
+        this.experience = new Experience();
+        this.camera = this.experience.camera;
         this.intersectedObjects = [];
-        this.objects = objects;
+        this.objects = this.experience.raycastingObjects;
         this.pointer = new Vector2(-2, -2);
-        this.container = container;
-        this.controls = controls;
+        this.controls = this.experience.controls;
         
         document.addEventListener('mousemove', event => this.onMouseMove(event));
         document.addEventListener('click', (event)=> this.onClick(event));
@@ -17,8 +19,8 @@ export class CustomRaycaster extends Raycaster{
 
     onMouseMove(event){
         
-        this.pointer.x = ( event.clientX / this.container.clientWidth ) * 2 - 1;
-	    this.pointer.y = - ( event.clientY / this.container.clientHeight ) * 2 + 1;
+        this.pointer.x = ( event.clientX / container.clientWidth ) * 2 - 1;
+	    this.pointer.y = - ( event.clientY / container.clientHeight ) * 2 + 1;
         this.setFromCamera( this.pointer, this.camera);
         this.onIntersect();
     }
@@ -45,9 +47,9 @@ export class CustomRaycaster extends Raycaster{
             
             if (currentintersect.name.includes('monitor')){
                 gsap.to(this.camera.position, {
-                    x: 0,
-                    y: 0,
-                    z: .1,
+                    x: currentintersect.position.x,
+                    y: currentintersect.position.y,
+                    z: currentintersect.position.z+.7,
                     duration: 2,
                     
                 });
