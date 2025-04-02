@@ -20,7 +20,6 @@ screen.removeFromParent();
 
 //css3d renderer object
 const object = create_css3d('div', screen);
-console.log(object);
 scene.add(object);
 // raycastingObjects.push(object.mesh);
   

@@ -1,6 +1,5 @@
 import {Group, MeshBasicMaterial, NoBlending, DoubleSide, Mesh, PlaneGeometry, Vector3, Box3} from 'three';
 import { CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
-// import { OrbitControls } from "./OrbitControls.js";
 
 
 
@@ -66,16 +65,6 @@ function create_css3d(type, object) {
     return obj
 }
 
-// function create_controls(camera, canvas){
-//     const controls = new OrbitControls(camera, canvas);
-//     controls.maxDistance = 7;
-//     controls.minDistance = -2
-//     controls.enableDamping = true;
-//     controls.maxPolarAngle = Math.PI/2;
-//     controls.minAzimuthAngle = -Math.PI/12;
-//     controls.maxAzimuthAngle = Math.PI/2;
-//     return controls;
-// }
 
 function getSize(object){
     const size = new Vector3();
