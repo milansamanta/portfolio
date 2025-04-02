@@ -1,10 +1,10 @@
 import {Group, MeshBasicMaterial, NoBlending, DoubleSide, Mesh, PlaneGeometry, Vector3, Box3} from 'three';
 import { CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
-import { OrbitControls } from "./OrbitControls.js";
+// import { OrbitControls } from "./OrbitControls.js";
 
 
 
-const frequency = 2 * Math.PI / 10000;
+const frequency = 2 * Math.PI / 20000;
 const amplitude = Math.PI / 4.0;
 const startTime = performance.now();
 async function animate_chair(chair) {
@@ -45,35 +45,37 @@ function create_css3d(type, object) {
     const css3dObject = new CSS3DObject( element )
     css3dObject.scale.set(size.x/(aspect*1080), size.y/1080);
     obj.css3dObject = css3dObject;
+    css3dObject.lookAt(new Vector3(0, 0, 0));
     obj.add(css3dObject);
     
     console.log(css3dObject.element);
     var material = new MeshBasicMaterial({
         opacity	: 0,
+        transparent: true,
         color	: 'black',
         blending: NoBlending,
-        side	: DoubleSide,
     });
     const geometry = new PlaneGeometry( size.x, size.y );
     const mesh = new Mesh( geometry, material );
     mesh.name = 'newmonitor';
     obj.mesh = mesh;
     obj.position.copy(object.position);
+    console.log(obj.css3dObject.rotation);
     obj.add( mesh );
 
     return obj
 }
 
-function create_controls(camera, canvas){
-    const controls = new OrbitControls(camera, canvas);
-    controls.maxDistance = 7;
-    controls.minDistance = -2
-    controls.enableDamping = true;
-    controls.maxPolarAngle = Math.PI/2;
-    controls.minAzimuthAngle = -Math.PI/12;
-    controls.maxAzimuthAngle = Math.PI/2;
-    return controls;
-}
+// function create_controls(camera, canvas){
+//     const controls = new OrbitControls(camera, canvas);
+//     controls.maxDistance = 7;
+//     controls.minDistance = -2
+//     controls.enableDamping = true;
+//     controls.maxPolarAngle = Math.PI/2;
+//     controls.minAzimuthAngle = -Math.PI/12;
+//     controls.maxAzimuthAngle = Math.PI/2;
+//     return controls;
+// }
 
 function getSize(object){
     const size = new Vector3();
@@ -84,5 +86,5 @@ function getSize(object){
 
 
 export{
-    onIntersect, animate_chair, create_css3d, create_controls, getSize
+    onIntersect, animate_chair, create_css3d, getSize
 }

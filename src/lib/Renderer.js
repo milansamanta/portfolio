@@ -24,8 +24,8 @@ export class Renderer {
         this.composer.update();
     }
     render(){
-        this.cssrenderer.render(this.scene, this.camera);
         this.composer.render();
+        this.cssrenderer.render(this.scene, this.camera);
     }
     setAnimationLoop(func){
         this.webglrenderer.setAnimationLoop(func);

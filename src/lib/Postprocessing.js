@@ -6,6 +6,7 @@ import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectio
 import { CustomRaycaster } from "./Raycaster";
 import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import { Vector2 } from "three";
+import { CustomControls } from "./CustomControls";
 
 
 
@@ -16,7 +17,8 @@ export class Composer{
       this.scene = scene;
       this.camera = camera;
       this.container = container;
-      this.raycaster = new CustomRaycaster(objects, container, camera);
+      this.controls = new CustomControls(camera, renderer.webglElement);
+      this.raycaster = new CustomRaycaster(objects, container, camera, this.controls);
   
       this.composer = new EffectComposer(this.renderer);
   
@@ -63,6 +65,7 @@ export class Composer{
   
     // Render the scene with FXAA
     render() {
+      this.controls.update();
       this.composer.render();
     }
     onMouseMove(event){
@@ -73,4 +76,6 @@ export class Composer{
         this.outlinePass.selectedObjects = [];
       }
     }
+
+   
   }
