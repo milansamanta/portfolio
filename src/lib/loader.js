@@ -33,7 +33,7 @@ const textureMap = {
   };
 
   const envmap = new CubeTextureLoader()
-  .setPath( '/textures/envmap/' )
+  .setPath( '/textures/envmap' )
 	.load([
     'px.webp',
     'nx.webp',

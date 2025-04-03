@@ -1,13 +1,10 @@
-import {Group, MeshBasicMaterial, NoBlending, DoubleSide, Mesh, PlaneGeometry, Vector3, Box3} from 'three';
+import {Group, MeshBasicMaterial, NoBlending, Mesh, PlaneGeometry, Vector3, Box3} from 'three';
 import { CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
-
-
 
 const frequency = 2 * Math.PI / 20000;
 const amplitude = Math.PI / 4.0;
 const startTime = performance.now();
 async function animate_chair(chair) {
-
     chair.rotation.y = amplitude * Math.sin(frequency * (performance.now() - startTime));   
 }
 
@@ -39,12 +36,10 @@ function create_css3d(type, object) {
     element.style.height =  1080+'px';
     element.style.opacity = 1;
     element.classList.add('screen');
-    element.innerHTML = '<iframe src="/iframe/index.html" title="OS" class="frame">Not Found</iframe>'
-
-    const css3dObject = new CSS3DObject( element )
+    element.innerHTML = '<iframe src="/iframe/index.html" title="OS" class="frame">Not Found</iframe>';
+    const css3dObject = new CSS3DObject(element);
     css3dObject.scale.set(size.x/(aspect*1080), size.y/1080);
     obj.css3dObject = css3dObject;
-    css3dObject.lookAt(new Vector3(0, 0, 0));
     obj.add(css3dObject);
     
     console.log(css3dObject.element);
@@ -54,15 +49,14 @@ function create_css3d(type, object) {
         color	: 'black',
         blending: NoBlending,
     });
-    const geometry = new PlaneGeometry( size.x, size.y );
-    const mesh = new Mesh( geometry, material );
+    const geometry = new PlaneGeometry( size.x, size.y);
+    const mesh = new Mesh(geometry, material);
     mesh.name = 'newmonitor';
     obj.mesh = mesh;
     obj.position.copy(object.position);
     console.log(obj.css3dObject.rotation);
     obj.add( mesh );
-
-    return obj
+    return obj;
 }
 
 
@@ -73,7 +67,28 @@ function getSize(object){
     return size;
 }
 
+var isMouseDown = false;
+var clickTimeout;
+
+function detect_click(onclick = function (){}){
+    document.addEventListener("mousedown", () => {
+        isMouseDown = true;
+        
+        clickTimeout = setTimeout(() => {
+            isMouseDown = false;
+        }, 200);
+    });
+    
+    document.addEventListener("mouseup", () => {
+        if (isMouseDown) {
+            clearTimeout(clickTimeout);
+            onclick();
+        }
+        isMouseDown = false;
+    });
+}
+
 
 export{
-    onIntersect, animate_chair, create_css3d, getSize
+    onIntersect, animate_chair, create_css3d, getSize, detect_click
 }

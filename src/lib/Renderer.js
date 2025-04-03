@@ -74,14 +74,14 @@ export class Renderer {
         this.composer.setSize(container.clientWidth, container.clientHeight);
       }
     
-      // Render the scene with FXAA
       render() {
-        // this.controls.update();
         this.composer.render();
         this.cssrenderer.render(this.scene, this.camera);
+        if(this.outlinePass.selectedObjects.length > 0 && !this.raycaster.enabled){
+          this.outlinePass.selectedObjects = [];
+        }
       }
       onMouseMove(event){
-        event.preventDefault();
         if(this.raycaster.intersectedObjects.length > 0 && this.raycaster.intersectedObjects[0].object.name.includes('pointer')){
           this.outlinePass.selectedObjects = [this.raycaster.intersectedObjects[0].object]
         }
