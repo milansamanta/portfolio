@@ -41,7 +41,7 @@ export class Experience {
         this.raycasterer = new CustomRaycaster();
     }
     create_renderer(){
-        this.renderer = new Renderer({canvas: this.canvas, alpha:true, antialias:false, powerPreference: "high-performance"});
+        this.renderer = new Renderer({canvas: this.canvas, alpha:true, antialias: false, powerPreference: "high-performance"});
     }
     create_controls(){
         this.controls = new CustomControls(this.camera, this.canvas);

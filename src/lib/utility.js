@@ -1,5 +1,6 @@
 import {Group, MeshBasicMaterial, NoBlending, Mesh, PlaneGeometry, Vector3, Box3} from 'three';
 import { CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
+import { css } from './Constants';
 
 const frequency = 2 * Math.PI / 20000;
 const amplitude = Math.PI / 4.0;
@@ -87,8 +88,15 @@ function detect_click(onclick = function (){}){
         isMouseDown = false;
     });
 }
+function detect_drag(ondrag = function (){}){
+    document.addEventListener('mousemove', ()=>{
+        if (isMouseDown){
+            ondrag();
+        }
+    })
+}
 
 
 export{
-    onIntersect, animate_chair, create_css3d, getSize, detect_click
+    onIntersect, animate_chair, create_css3d, getSize, detect_click, detect_drag
 }

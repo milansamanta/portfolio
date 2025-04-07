@@ -8,6 +8,8 @@ export class CustomRaycaster extends Raycaster{
     constructor(){
         super();
         this.enabled = true;
+        this.isMouseDown = false;
+        this.isdragging = false;
         this.experience = new Experience();
         this.camera = this.experience.camera;
         this.intersectedObjects = [];
@@ -16,12 +18,58 @@ export class CustomRaycaster extends Raycaster{
         this.controls = this.experience.controls;
         this.prevposition = new Vector3();
         this.prevtarget = new Vector3();
+
+        this.onMouseDownHandler = this.onMouseDown.bind(this);
+        this.onMouseUpHandler = this.onMouseUp.bind(this);
+        this.onDragHandler = this.cssMouseMove.bind(this);
         
         document.addEventListener('mousemove', event => this.onMouseMove(event));
         detect_click(this.onClick.bind(this));
         button.addEventListener('click', ()=>{
             this.flyback();
-        })
+        });
+    }
+
+    cssMouseMove(event){
+        if (this.isMouseDown){
+            this.isdragging = true;
+            this.ondrag(event);
+            this.manualOrbit(event);
+        }
+    }
+
+    onMouseDown(){
+        this.isMouseDown = true;
+    }
+
+    onMouseUp(){
+        this.isMouseDown = false;
+        if(this.isdragging){
+            this.isdragging = false;
+            this.removeEvents();
+        }
+    }
+
+    addEvents(){
+        document.addEventListener("mousedown", this.onMouseDownHandler);
+        document.addEventListener("mouseup", this.onMouseUpHandler);
+        document.addEventListener("mousemove", this.onDragHandler);
+    }
+    removeEvents(){
+        document.removeEventListener("mousedown", this.onMouseDownHandler);
+        document.removeEventListener("mouseup", this.onMouseUpHandler);
+        document.removeEventListener("mousemove", this.onDragHandler);
+    }
+
+    manualOrbit(event) {
+        const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+        const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+    
+        const ROTATION_SPEED = 0.005;
+    
+        this.controls.update();
+        this.controls._rotateLeft(movementX * ROTATION_SPEED);
+        this.controls._rotateUp(movementY * ROTATION_SPEED);
     }
 
     onMouseMove(event){
@@ -68,8 +116,6 @@ export class CustomRaycaster extends Raycaster{
     }
     flyback(){
         this.resetScreen();
-        console.log(this.prevposition);
-        console.log(this.prevtarget);
         gsap.to(this.camera.position, {
             x: this.prevposition.x,
             y: this.prevposition.y,
@@ -96,18 +142,16 @@ export class CustomRaycaster extends Raycaster{
         document.body.style.cursor = 'default';
         this.prevposition.copy(this.camera.position);
         this.prevtarget.copy(this.controls.target);
-        console.log(this.prevposition);
-        console.log(this.prevtarget);
         gsap.to(this.camera.position, {
             x: currentintersect.position.x,
-            y: currentintersect.position.y,
-            z: currentintersect.position.z+.7,
+            y: currentintersect.position.y-.1,
+            z: currentintersect.position.z+.65,
             duration: 2,
             
         });
         gsap.to(this.controls.target,{
             x: currentintersect.position.x,
-            y: currentintersect.position.y,
+            y: currentintersect.position.y-.1,
             z: currentintersect.position.z,
             duration: 2,
             onComplete: ()=>{
@@ -117,18 +161,25 @@ export class CustomRaycaster extends Raycaster{
         });
         
     }
+    ondrag(event){
+        this.controls.enabled = true;
+        this.enabled = true;
+        this.resetScreen()
+    }
 
     setScreen(){
-        css.style.zIndex = 99;
-        css.style.pointerEvents = "all";
-        webgl.style.pointerEvents = 'none';
+        css.style.zIndex = 1;
+        css.style.pointerEvents = "auto";
         button.style.display = 'flex';
+        this.addEvents();
     }
     resetScreen(){
         button.style.display = 'none';
         css.style.zIndex = 0;
         css.style.pointerEvents = "none";
         webgl.style.pointerEvents = 'auto';
+        
     }
+    
     
 }
